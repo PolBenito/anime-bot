@@ -8,10 +8,8 @@
     <link rel="icon" href="./assets/img/anime-bot.ico">
 
     <script>
-        console.log(windows.location);
-        alert(window.location);
-        if (window.location.pathname === '/') {
-            window.location.replace('/index.html');
+        if (!window.location.pathname.includes('index.html')) {
+            window.location.replace('./index.html');
         }
     </script>
 
