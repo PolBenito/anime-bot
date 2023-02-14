@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>anime-bot</title>
+    <link rel="icon" href="./assets/img/anime-bot.ico">
+
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <!-- Font Awesome 6.2.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- CSS -->
+    <link rel="stylesheet/less" type="text/css" href="./assets/css/index_style.less">
+</head>
+<body>
+    <!-- SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        <symbol id="info-fill" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+        </symbol>
+        <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </symbol>
+    </svg>
+    
+    <div id="global-content">
+        
+        <div id="nav-left">
+            <div id="top">
+                <div id="boxTitle">
+                    <img id="img_anime-bot" src="./assets/img/anime-bot_512px.png" alt="Icono">
+                    <div id="title">anime-bot</div>
+                </div>
+    
+                <div id="nav-anime">
+                    <div class="subtitle">Anime</div>
+                    <ul>
+                        <li onclick="NavigateMenu('anime', 'watching')">Watching</li>
+                        <li onclick="NavigateMenu('anime', 'novedades')">Novedades</li>
+                    </ul>
+                </div>
+    
+                <!-- <div class="nav-separador"></div>
+    
+                <div id="nav-manga">
+                    <div class="subtitle">Manga</div>
+                    <ul>
+                        <li onclick="NavigateMenu('manga', 'watching')">Watching</li>
+                        <li onclick="NavigateMenu('manga', 'novedades')">Novedades</li>
+                    </ul>
+                </div> -->
+            </div>
+            
+            <div id="bottom">
+                <div class="d-flex flex-row">
+                    <img class="img_discord me-2" src="./assets/img/discord_bgwhite.svg" onclick="OpenServerDiscord()" alt="Abrir el server de Discord">
+                    <div id="diaHoy"></div>
+                </div>
+                <div class="nav-separador"></div>
+                <div class="d-flex flex-row mb-2">
+                    <span class="me-2">Usuario: </span>
+                    <span id="usuario" onclick="IrPerfilUsuarioMyAnimeList()"></span>
+                </div>
+                <button type="button" id="btnCerrarSesion" class="btn" onclick="CerrarSesion_Click()"><i class="fa-solid fa-arrow-right-from-bracket pe-2" aria-hidden="true"></i>Cerrar sesión</button>
+            </div>
+        </div>
+        
+        <div id="content">
+
+            <!-- #region Waiting Form -->
+            <div class="cargando">
+                <div id="waiting-form">
+                    <img id="img_waiting" src="./assets/img/spinner.gif" alt="Cargando...">
+                    <div id="waiting-content">
+                        <div class="fw-bold">Cargando</div>
+                        <div>Por favor, espera</div>
+                    </div>
+                </div>
+            </div>
+            <!-- #endregion -->
+
+            <!-- #region Alerts -->
+            <div id="alert-error" class="alert alert-danger" role="alert" style="display: none;">
+                <div class="d-flex align-items-center">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" fill="currentColor" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                    <div>
+                        <strong>¡Error!</strong> <span id="alertErrorMsg"></span>
+                    </div>
+                    <button type="button" class="btn-close" onclick="CerrarAlert('error')" aria-label="Close"></button>
+                </div>    
+            </div>
+
+            <div id="alert-exito" class="alert alert-success" role="alert" style="display: none;">
+                <div class="d-flex align-items-center">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" fill="currentColor" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                    <div>
+                        <strong>¡Bien!</strong> <span id="alertExitoMsg"></span>
+                    </div>
+                    <button type="button" class="btn-close" onclick="CerrarAlert('success')" aria-label="Close"></button>
+                </div>    
+            </div>
+
+            <div id="alert-cuidado" class="alert alert-warning" role="alert" style="display: none;">
+                <div class="d-flex align-items-center">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" fill="currentColor" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                    <div>
+                        <strong>¡Cuidado!</strong> <span id="alertCuidadoMsg"></span>
+                    </div>
+                    <button type="button" class="btn-close" onclick="CerrarAlert('warning')" aria-label="Close"></button>
+                </div>    
+            </div>
+            <!-- #endregion -->
+
+            
+            <!-- #region Anime -->
+            <div id="anime" style="display: none;">
+                <!-- #region Anime: Novedades -->
+                <div id="a-novedades" style="display: none;">
+                    <!-- Header -->
+                    <div class="boxHeader">
+                        <h1>Novedades</h1>
+                    </div>
+
+                    <!-- Empty list -->
+                    <div id="anime_novedades_list_no_data" style="display: none;">
+                        <div class="d-flex flex-column">
+                            <img src="" class="empty-img" alt="Hoy no sale ningún anime">    
+                            <div class="mt-3">
+                                <h5>Nada de nada</h5>
+                                <p>Hoy no sale ningún anime que tengas guardado</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loop de animes -->
+                    <div id="anime_novedades_list" style="display: none;"></div>
+                </div>
+                <!-- #endregion -->
+    
+                <!-- #region Anime: Watching -->
+                <div id="a-watching" style="display: none;">
+                    <!-- Header -->
+                    <div class="boxHeader">
+                        <h1>Watching</h1>
+                        <button type="button" class="btn bg_blue me-2" onclick="MostrarInputAddAnime_Click()"><i class="fa-solid fa-plus pe-2" aria-hidden="true"></i>Añadir anime</button>
+                        <button type="button" class="btn bg_red" onclick="EliminarTodosLosAnimes_Click()"><i class="fa-solid fa-trash pe-2" aria-hidden="true"></i>Eliminar todos los animes</button>
+                    </div>
+
+                    <!-- Modal añadir anime -->
+                    <div id="modalAddAnime" class="modal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Añadir anime</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Añadir ID del anime de MyAnimeList</p>
+
+                                    <div class="d-flex flex-row">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="fa-solid fa-code"></i></span>
+                                            <input id="anime_id" type="text" class="form-control" placeholder="ID">
+                                            <span id="error_input_anime" class="input-group-text spanError" style="display: none"><i class="fa-solid fa-code"></i></span>
+                                        </div>
+                                        <button type="button" class="btn bg_green ms-2" onclick="GuardarAnime_Click()">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty list -->
+                    <div id="anime_watching_list_no_data" style="display: none;">
+                        <div class="d-flex flex-column">
+                            <img src="" class="empty-img" alt="No hay ningún anime guardado">    
+                            <div class="mt-3">
+                                <h5>No hay ningún anime añadido</h5>
+                                <p>Añade los animes usando el ID de MyAnimeList</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loop de animes -->
+                    <div id="anime_watching_list" style="display: none;"></div>
+                </div>
+                <!-- #endregion -->
+            </div>
+
+            <!-- Template del card anime -->
+            <script id="tmpl_anime_list" type="text/x-jsrender">
+                <div class="card card_anime_{{:COD_ANIME}}">
+                    <img src="{{:IMAGE}}" class="card-img" alt="Imagen del anime">
+                    <div class="card-body">
+                        <div class="c_title">{{:TITLE}}</div>
+                        {{if AIRING}}
+                        <div class="c_fecha">
+                            <div class="c_day">{{:DAY}}</div>
+                            <div class="c_hour">{{:HOUR}}</div>
+                        </div>
+                        {{else}}
+                        <div class="c_airing">Finalizado</div>
+                        {{/if}}
+                        <div class="c_box_eps"><span>{{:FINAL_POST_EPISODE}}</span>/{{:TOTAL_EPISODES}} episodios</div>
+                        
+                        <div class="c_box_rrss">
+                            <img class="c_rrss" src="./assets/img/MyAnimeList_256px.png" onclick="IrMyAnimeList('{{:COD_ANIME}}')" alt="Link para ir a la página de MyAnimeList">
+                        </div>
+                        <div class="c_eliminar">
+                            <img class="c_img_actions" src="./assets/img/trash.svg" onclick="EliminarAnime('{{:COD_ANIME}}')" alt="Botón para eliminar el anime de la lista">
+                        </div>
+                        <!-- <div class="c_editar">
+                            <img class="c_img_actions" src="./assets/img/edit.svg" onclick="EditarAnime('{{:COD_ANIME}}')" alt="Botón para editar el anime de la lista">
+                        </div> -->
+                    </div>
+                    <div class="c_border_right"></div>
+                </div>
+            </script>
+            <!-- #endregion -->
+            
+            <!-- #region Manga -->
+            <!-- <div id="manga" style="display: none;">
+                <div id="m-novedades">
+                    <h1>Novedades</h1>
+                </div>
+    
+                <div id="m-watching" style="display: none;">
+                    <h1>Watching</h1>
+                </div>
+            </div> -->
+            <!-- #endregion -->
+        </div>
+
+    </div>
+
+
+    <!-- Less 4.1.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/less@4.1.1"></script>
+    <!-- Bootstrap 5.3.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <!-- JQuery 3.6.1 -->
+    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <!-- JsRender 1.0.12 -->
+    <script src="https://www.jsviews.com/download/jsrender.js"></script>
+    <!-- Stanford JavaScript Crypto Library (SJCL) 1.0.8 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.8/sjcl.min.js"></script>
+    <!-- Moment 2.29.4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data-10-year-range.min.js"></script>
+    <!-- SweetAlert 11.7.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
+    <!-- Functions JS -->
+    <script type="text/javascript" src="./assets/js/functions.js"></script>
+
+    <script>
+        var pathApi = `./api/index.php?COD_USER=__codUser__&`;
+        const urlWebhook = 'https://discord.com/api/webhooks/1065407831332880415/vcbM_BLRBSDl79uNCWYVXmagOqQAOK_SFx5KOrOxZwIyOnIm_jnSax_NeoQV3zgPn1vv';
+        const numImgCrying = 5;
+        const nl = '\n';
+
+        var codUser;
+        var nombreUser;
+        var urlUser;
+
+        const myTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        var todayEngDay;
+
+        var ListAnimes = new Array();
+        var ListAnimesNovedades = new Array();
+
+
+        async function Init() {
+            // Limpia el cache
+            $.ajaxSetup({
+                cache: false
+            });
+
+            if (!checkCookie('animebot_user')) CerrarSesion();
+            
+            codUser = getCodUserCookie();
+            pathApi = pathApi.replace('__codUser__', codUser);
+
+            var logged = await ComprobarSiEstaLogeado();
+            if (!logged) CerrarSesion();
+
+            fetch(pathApi+new URLSearchParams({ 'OP': 'USER_GET' }))
+            .then(response => response.json())
+            .then(data => {
+                if (data.estado == "ok") {
+                    nombreUser = data.res.NOMBRE;
+                    urlUser = data.res.URL;
+
+                    $('#usuario').html(nombreUser);
+                    
+
+                    // Get dia de hoy en inglés
+                    var todayDiaNum = new Date().getDay();
+                    todayEngDay = `${ListEngDays[todayDiaNum]}`;
+                    $('#diaHoy').html(translateDay(todayEngDay));
+
+                    CargarPantalla();
+                }
+                else if (data.estado == "ko") MostrarAlert('error', 'No se ha podido recuperar la información del usuario.');
+            })                
+            .catch(error => {
+                console.error(error);
+                MostrarAlert('error', 'No se ha podido recuperar la información del usuario.');
+            });
+        }
+
+        async function CargarPantalla() {
+            AbrirWaitingForm();
+
+            ListAnimes = await CargarAnime();
+
+            // Mostramos los animes que tenemos guardados
+            if (ListAnimes.length <= 0) {
+                $('#anime_watching_list_no_data').show();
+                $('#anime_watching_list').hide();
+                
+                $('#anime_novedades_list_no_data').show();
+                $('#anime_novedades_list').hide();
+            }
+            else {
+                MostrarAnimeWatching();
+
+                // Cargamos y mostramos los animes (si hay) que han salido el día de hoy
+                CargarAnimeNovedades();
+                MostrarAnimeNovedades();
+
+                // Si el 'title' del anime es demasiado largo, lo acorto
+                $('.c_title').each(function() {
+                    var text = $(this).text();
+                    if (text.length > 90) {
+                        text = text.substring(0, 90);
+                        $(this).text(text+'...');
+                    }
+                });
+
+                CambiarColorAnimes();
+            }
+            
+            CargarImagenesEmpty();
+
+            // Decidimos qué pantalla se va a mostrar primero
+            NavigateMenu("anime", "watching");
+
+            CerrarWaitingForm();
+        }
+
+        // #region Anime
+        
+        function CargarAnime() {
+            return new Promise((resolve) => {
+                fetch(pathApi+new URLSearchParams({ 'OP': 'ANIME_GET' }))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.estado == "ok") {
+                        resolve(data.res);
+                    }
+                    else if (data.estado == "ko") {
+                        MostrarAlert('error', 'No se han podido recuperar los animes.');
+                        resolve(new Array());
+                    }
+                })                
+                .catch(error => {
+                    console.error(error);
+                    MostrarAlert('error', 'No se han podido recuperar los animes.');
+                    resolve(new Array());
+                });
+            });
+        }
+
+        function MostrarAnimeWatching() {
+            var tmpl = $.templates("#tmpl_anime_list");
+            var html = tmpl.render(ListAnimes);
+            $('#anime_watching_list').html(html);
+
+            $('#anime_watching_list').show();
+            $('#anime_watching_list_no_data').hide();
+        }
+
+        function CargarAnimeNovedades() {
+            ListAnimesNovedades = new Array();
+
+            ListAnimes.forEach(e => {
+                if (todayEngDay == e.DAY_ENG && e.AIRING) ListAnimesNovedades.push(e);
+            });
+
+            // Enviamos por discord qué animes han salido el día de hoy
+            // (Personalizado por user)
+            if (ListAnimesNovedades.length > 0) {
+                let fechaHoy = moment().format('DD/MM/YYYY');
+
+                var msg = "```ini";
+                msg += `${nl}[${nombreUser}] ${fechaHoy}`;
+                msg += `${nl}`;
+
+                ListAnimesNovedades.forEach(e => { msg += `${nl}- ${e.TITLE}`; });
+
+                msg += "```";
+                
+                EnviarMsgDiscord(msg);
+            }
+        }
+
+        function MostrarAnimeNovedades() {
+            if (ListAnimesNovedades.length <= 0) {
+                $('#anime_novedades_list_no_data').show();
+                $('#anime_novedades_list').hide();
+            }
+            else {
+                var tmpl = $.templates("#tmpl_anime_list");
+                var html = tmpl.render(ListAnimesNovedades);
+                $('#anime_novedades_list').html(html);
+    
+                $('#anime_novedades_list').show();
+                $('#anime_novedades_list_no_data').hide();
+            }
+        }
+
+        function CambiarColorAnimes() {
+            ListAnimes.forEach(e => {
+                let border = $('.card_anime_'+e.COD_ANIME+' .c_border_right');
+                border.addClass('bg_blue');
+
+                if (!e.AIRING) border.addClass('bg_gray');
+                else {
+                    if (todayEngDay == e.DAY_ENG) border.addClass('bg_green');
+                }
+            });
+        }
+
+        function CargarImagenesEmpty() {
+            let num = Math.floor(Math.random() * (numImgCrying+1));
+            let url = './assets/img/cry/crying_'+num+'.gif';
+            $('.empty-img').attr('src', url);
+        }
+
+        // #region Add anime
+        
+        function MostrarInputAddAnime_Click() {
+            const modalAddAnime = new bootstrap.Modal('#modalAddAnime', {})
+            modalAddAnime.show();
+        }
+
+        function GuardarAnime_Click() {
+            var codAnime = $('#anime_id').val();
+            
+            // No es un número
+            var error = false;
+            if (!codAnime || isNaN(codAnime)) error = true;
+
+            // Ya existe en la lista
+            var alreadyExists = false;
+            for (let e of ListAnimes) {
+                if (e.COD_ANIME == codAnime) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (error) $('#error_input_anime').show();
+            else {
+                if (alreadyExists) {
+                    MostrarAlert('warning', 'El anime ya existe.');
+                    $('#modalAddAnime').modal('hide');
+                }
+                else GetInfoAnime(codAnime);
+            }
+
+            $('#anime_id').val('');
+        }
+
+        function GetInfoAnime(codAnime) {
+            // Get info anime
+            $.ajax({
+                url: "https://api.jikan.moe/v4/anime/"+codAnime,
+                type: "GET",
+                success: function(a_data) {
+
+                    // Get episodes
+                    $.ajax({
+                        url: "https://api.jikan.moe/v4/anime/"+codAnime+"/episodes",
+                        type: "GET",
+                        success: function(e_data) {
+                            let anime = {};
+                            let animeDataAPI = a_data["data"];
+                            let episodesDataAPI = e_data["data"];
+
+                            anime["COD_ANIME"] = parseInt(codAnime);
+                            anime["TITLE"] = animeDataAPI["title"];
+                            anime["IMAGE"] = animeDataAPI["images"]["jpg"]["image_url"];
+                            anime["URL"] = animeDataAPI["url"];
+                            anime["AIRING"] = animeDataAPI["airing"];
+
+                            if (animeDataAPI["episodes"] != null) anime["TOTAL_EPISODES"] = animeDataAPI["episodes"];
+                            else anime["TOTAL_EPISODES"] = "?";
+
+                            let res = ConvertFechaEmision(animeDataAPI["broadcast"]);
+                            anime["DAY"] = res[1];
+                            anime["HOUR"] = res[2];
+                            anime["DAY_ENG"] = res[0];
+
+                            anime["FINAL_POST_EPISODE"] = episodesDataAPI.length;
+
+                            InsertAnime(anime);
+                        },
+                        error: function() {
+                            MostrarAlert('error', 'No hay episodios.');
+                            $('#modalAddAnime').modal('hide');
+                        }
+                    });
+                },
+                error: function() {
+                    MostrarAlert('error', 'No existe el anime.');
+                    $('#modalAddAnime').modal('hide');
+                }
+
+            });
+        }
+
+        function ConvertFechaEmision(broadcast) {
+            if (broadcast == null
+             || broadcast["day"] == null
+             || broadcast["time"] == null
+             || broadcast["timezone"] == null
+             || broadcast["string"] == null
+            ) return ["", "", ""];
+
+            let time = broadcast["time"];
+            let day = removeLastCharacter(broadcast["day"]);
+            let timezone = broadcast["timezone"];
+            
+            var date = `${time} ${day}`;
+            var new_date = moment.tz(date, "HH:mm dddd", timezone);
+            var fecha_final = new_date.clone().tz(myTimezone);
+            
+            var eng_day = fecha_final.format('dddd');
+            var dia = translateDay(eng_day);
+            var hora = fecha_final.format('HH:mm');
+
+            return [eng_day, dia, hora];
+        }
+
+        function InsertAnime(anime) {
+            fetch(pathApi+new URLSearchParams({
+                'OP': 'ANIME_INSERT',
+                'COD_ANIME': anime['COD_ANIME'],
+                'TITLE': anime['TITLE'],
+                'IMAGE': anime['IMAGE'],
+                'URL': anime['URL'],
+                'AIRING': anime['AIRING'],
+                'DAY': anime['DAY'],
+                'HOUR': anime['HOUR'],
+                'DAY_ENG': anime['DAY_ENG'],
+                'TOTAL_EPISODES': anime['TOTAL_EPISODES'],
+                'FINAL_POST_EPISODE': anime['FINAL_POST_EPISODE']
+            }))
+            .then(response => response.json())
+            .then(data => {
+                if (data.estado == "ok") {
+                    ListAnimes.push(anime);
+                    CargarPantalla();
+                    MostrarAlert('success', 'Se ha añadido el anime correctamente.');
+                }
+                else if (data.estado == "ko") MostrarAlert('error', data.mensaje);
+            })                
+            .catch(error => {
+                console.error(error);
+                MostrarAlert('error', 'No se ha podido añadir correctamente.');
+            })
+            .finally(() => {
+                $('#modalAddAnime').modal('hide');
+            });
+        }
+        
+        // #endregion
+
+        // #region Delete anime
+
+        function EliminarAnime(codAnime) {
+            fetch(pathApi+new URLSearchParams({ 
+                'OP': 'ANIME_DELETE',
+                'COD_ANIME': codAnime
+            }))
+            .then(response => response.json())
+            .then(data => {
+                if (data.estado == "ok") {
+                    let pos = ListAnimes.findIndex(x => x.codAnime == codAnime);
+                    delete ListAnimes[pos];
+                    ListAnimes = ListAnimes.filter(Boolean);
+                    CargarPantalla();
+                    MostrarAlert('success', 'Se ha eliminado correctamente.');
+                }
+                else if (data.estado == "ko") MostrarAlert('error', 'No se ha podido eliminar.');
+            })                
+            .catch(error => {
+                console.error(error);
+                MostrarAlert('error', 'No se ha podido eliminar.');
+            });
+        }
+
+        function EliminarTodosLosAnimes_Click() {
+            if (ListAnimes.length <= 0) return;
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: '¿Quieres eliminar todos los animes?',
+                icon: 'warning',
+                focusConfirm: false,
+                focusCancel: false,
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Aceptar',
+                reverseButtons: true,
+                buttonsStyling: false,
+                customClass: {
+                    cancelButton: 'btn bg_red text-white me-2',
+                    confirmButton: 'btn bg_green text-white'
+                }
+            }).then((res) => {
+                if (res.isConfirmed) EliminarTodosLosAnimes();
+            });
+        }
+
+        function EliminarTodosLosAnimes() {
+            fetch(pathApi+new URLSearchParams({ 'OP': 'ANIME_DELETE_ALL' }))
+            .then(response => response.json())
+            .then(data => {
+                if (data.estado == "ok") {
+                    ListAnimes = new Array();
+                    CargarPantalla();
+                    MostrarAlert('success', 'Eliminados correctamente.');
+                }
+                else if (data.estado == "ko") MostrarAlert('error', 'No se han podido eliminar.');
+            })                
+            .catch(error => {
+                console.error(error);
+                MostrarAlert('error', 'No se han podido eliminar.');
+            });
+        }
+
+        // #endregion
+
+        function EditarAnime(id) {
+
+        }
+
+        function IrMyAnimeList(id) {
+            window.open(`https://myanimelist.net/anime/${id}`, '_blank');
+        }
+        
+        // #endregion
+
+        // #region WaitingForm
+
+        function AbrirWaitingForm() {
+            $('.cargando').css('display', 'block');
+            
+            PutMarginForWaitingForm();
+        }
+
+        function CerrarWaitingForm() {
+            $('.cargando').css('display', 'none');
+            $('.cargando').css('padding-left', 0);
+        }
+
+        function PutMarginForWaitingForm() {
+            var screen_width = $(window).width();
+            var nav_width = $('#nav-left').width();
+            var waiting_width = $('#waiting-form').width();
+
+            var total = (screen_width - nav_width - waiting_width) / 2;
+
+            $('.cargando').css('padding-left', total);
+        }
+
+        // #endregion
+
+        // #region Alerts
+
+        function MostrarAlert(tipo, msg) {
+            // Cerramos todos los alerts antes de mostrar alguno
+            $('.alert').each(function() {
+                $(this).hide();
+            });
+
+            if (tipo == 'error') {
+                $('#alertErrorMsg').html(msg);
+                $('#alert-error').fadeIn();
+            } 
+            else if (tipo == 'success') {
+                $('#alertExitoMsg').html(msg);
+                $('#alert-exito').fadeIn();
+            } 
+            else if (tipo == 'warning') {
+                $('#alertCuidadoMsg').html(msg);
+                $('#alert-cuidado').fadeIn();
+            }
+        }
+
+        function CerrarAlert(tipo) {
+            if (tipo == 'error') $('#alert-error').fadeOut();
+            else if (tipo == 'success') $('#alert-exito').fadeOut();
+            else if (tipo == 'warning') $('#alert-cuidado').fadeOut();
+        }
+
+        // #endregion
+
+        function NavigateMenu(tipo, item) {
+            // Escondemos todos los otros box
+            $("#anime").hide();
+            $("#a-novedades").hide();
+            $("#a-watching").hide();
+            $("#manga").hide();
+            $("#m-novedades").hide();
+            $("#m-watching").hide();
+
+            if (tipo == "anime") {
+                if (item == "novedades") {
+                    $("#anime").show();
+                    $("#a-novedades").show();
+                }
+                else if (item == "watching") {
+                    $("#anime").show();
+                    $("#a-watching").show();
+                }
+            }
+            else if (tipo == "manga") {
+                if (item == "novedades") {
+                    $("#manga").show();
+                    $("#m-novedades").show();
+                }
+                else if (item == "watching") {
+                    $("#manga").show();
+                    $("#m-watching").show();
+                }
+            }
+        }
+
+        function IrPerfilUsuarioMyAnimeList() {
+            window.open(urlUser, '_blank');
+        }
+
+        function CerrarSesion_Click() {
+            CerrarSesion();
+        }
+
+        function CerrarSesion() {
+            setCookie('animebot_user', '', 0);
+            NavigateToLogin();
+        }
+
+        function EnviarMsgDiscord(msg) {
+            if (!msg) return;
+
+            const request = new XMLHttpRequest();
+
+            request.open("POST", urlWebhook);
+            request.setRequestHeader('Content-type', 'application/json');
+
+            const params = {
+                username: "anime-bot",
+                avatar_url: "",
+                content: msg
+            }
+
+            request.send(JSON.stringify(params));
+        }
+
+        $(window).resize(function() {
+            PutMarginForWaitingForm();
+        });
+
+        $(document).ready(Init);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>anime-bot</title>
+    <link rel="icon" href="./assets/img/anime-bot.ico">
+
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <!-- Font Awesome 6.2.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- CSS -->
+    <link rel="stylesheet/less" type="text/css" href="./assets/css/login_style.less">
+</head>
+<body>
+
+    <div id="global-content">
+
+        <!-- #region Alerts -->
+
+        <div id="alert-error" class="alert alert-danger" role="alert" style="display: none;">
+            <div class="d-flex align-items-center">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" fill="currentColor" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                <div>
+                    <strong>¡Error!</strong> <span id="alertErrorMsg"></span>
+                </div>
+                <button type="button" class="btn-close" onclick="CerrarAlert('error')" aria-label="Close"></button>
+            </div>    
+        </div>
+
+        <div id="alert-exito" class="alert alert-success" role="alert" style="display: none;">
+            <div class="d-flex align-items-center">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" fill="currentColor" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                <div>
+                    <strong>¡Bien!</strong> <span id="alertExitoMsg"></span>
+                </div>
+                <button type="button" class="btn-close" onclick="CerrarAlert('success')" aria-label="Close"></button>
+            </div>    
+        </div>
+
+        <!-- #endregion -->
+
+        <div class="d-flex">
+            <div id="leftBox">
+                <div id="img_modo"><i class="fa-solid fa-user-lock fa-2xl"></i></div>
+            </div>
+            <div id="content">
+                <div id="boxTitle">
+                    <img id="img_anime-bot" src="./assets/img/anime-bot_512px.png" alt="Icono">
+                    <div id="title">anime-bot</div>
+                </div>
+    
+                <div class="box">
+                    <div class="boxInputs">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="TxtCodUser" placeholder="Código">
+                            <label for="TxtCodUser">Código</label>
+                        </div>
+    
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="TxtPassword" placeholder="Contraseña">
+                            <label for="TxtPassword">Contraseña</label>
+                        </div>
+                    </div>
+    
+                    <div class="footer">
+                        <img class="img_discord" src="./assets/img/discord_4096px.png" onclick="OpenServerDiscord()" alt="Abrir el server de Discord">
+                        <div class="footer_right">
+                            <div class="text_footer_right" onclick="CambiarModoPantalla()">Crear cuenta</div>
+                            <button type="button" class="btn bg_blue" onclick="Submit_Click()">Entrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Less 4.1.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/less@4.1.1"></script>
+    <!-- Bootstrap 5.3.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <!-- JQuery 3.6.1 -->
+    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <!-- Stanford JavaScript Crypto Library (SJCL) 1.0.8 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.8/sjcl.min.js"></script>
+    <!-- Functions JS -->
+    <script type="text/javascript" src="./assets/js/functions.js"></script>
+
+    <script>
+        const path_api = './api/index.php?login=1&';
+
+        var tipoLogin = true;
+
+        async function Init() {
+            // Limpia el cache
+            $.ajaxSetup({
+                cache: false
+            });
+
+            var logged = await ComprobarSiEstaLogeado();
+            if (logged) NavigateToIndex();
+            else setCookie('animebot_user', '', 0);
+        }
+
+        function Submit_Click() {
+            var error = false;
+
+            var codUser = $('#TxtCodUser').val().trim();
+            var password = $('#TxtPassword').val().trim();
+
+            if (!codUser || isNaN(codUser) || !password) {
+                MostrarErrorInputs();
+                return;
+            }
+            else LimpiarErrorInputs();
+
+            if (tipoLogin) {
+                fetch(path_api+new URLSearchParams({
+                    'OP': 'LOGIN',
+                    'COD_USER': codUser
+                }))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.estado == 'ok') {
+                        var decryptedPassword = sjcl.decrypt(data.res.KEY, data.res.PASSWORD);
+
+                        if (password == decryptedPassword) CrearCookieLogin(codUser, data.res.PASSWORD);
+                        else {
+                            MostrarAlert('error', 'Contraseña incorrecta.');
+                            MostrarErrorInputs();
+                            return;
+                        }
+                    }
+                    else if (data.estado == 'ko') {
+                        MostrarAlert(data.tipo, data.mensaje);
+                        MostrarErrorInputs();
+                        return;
+                    }
+                })                
+                .catch(error => console.error(error));
+            }
+            else {
+                // Encriptamos la contraseña
+                var bitArray = sjcl.random.randomWords(8);
+                var encryptionKey = sjcl.codec.hex.fromBits(bitArray);
+                var nonce = sjcl.random.randomWords(3);
+                var cipherPassword = sjcl.encrypt(encryptionKey, password, {mode: "ccm", ts: 64, ks: 128, nonce: nonce});
+
+                // Obtenemos el nombre y la url de su perfil de MyAnimeList
+                $.ajax({
+                    url: "https://api.jikan.moe/v4/users/userbyid/"+codUser,
+                    type: "GET",
+                    success: function(infoUser) {
+                        // Guardamos las credenciales en la BBDD
+                        fetch(path_api+new URLSearchParams({
+                            'OP': 'REGISTER',
+                            'COD_USER': codUser,
+                            'PASSWORD': cipherPassword,
+                            'KEY': encryptionKey,
+                            'NOMBRE': infoUser.data.username,
+                            'URL': infoUser.data.url,
+                        }))
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.estado == "ok") CrearCookieLogin(codUser, cipherPassword);
+                            else if (data.estado == "ko") {
+                                MostrarAlert(data.tipo, data.mensaje);
+                                MostrarErrorInputs();
+                                return;
+                            }
+                        })                
+                        .catch(error => console.error(error));
+                    },
+                    error: function() {
+                        MostrarAlert('error', 'No existe el perfil.');
+                        MostrarErrorInputs();
+                        return;
+                    }
+                });
+            }
+        }
+
+        function CrearCookieLogin(codUser, cipherPassword) {
+            setCookie('animebot_user', JSON.stringify({'COD_USER': codUser, 'PASSWORD': cipherPassword}));
+            NavigateToIndex();
+        }
+
+        function CambiarModoPantalla() {
+            let imgSignIn = '<i class="fa-solid fa-user-lock fa-2xl"></i>';
+            let imgSignUp = '<i class="fa-solid fa-user-plus fa-2xl"></i>';
+
+            tipoLogin = !tipoLogin;
+
+            // Modo entrar
+            if (tipoLogin) {
+                $('.text_footer_right').text('Crear cuenta');
+                $('button').text('Entrar');
+                $('#img_modo').html(imgSignIn);
+            }
+            // Modo registrarse
+            else {
+                $('.text_footer_right').text('Acceder');
+                $('button').text('Crear');
+                $('#img_modo').html(imgSignUp);
+            }
+
+            LimpiarInputs();
+        }
+
+        function MostrarErrorInputs() {
+            $('.form-floating input#TxtCodUser').addClass('is-invalid');
+            $('.form-floating input#TxtPassword').addClass('is-invalid');
+        }
+
+        function LimpiarErrorInputs() {
+            $('.form-floating input#TxtCodUser').removeClass('is-invalid');
+            $('.form-floating input#TxtPassword').removeClass('is-invalid');
+        }
+
+        function LimpiarInputs() {
+            $('.form-floating input#TxtCodUser').val('');
+            $('.form-floating input#TxtPassword').val('');
+        }
+
+        // #region Alerts
+
+        function MostrarAlert(tipo, msg) {
+            // Cerramos todos los alerts antes de mostrar alguno
+            $('.alert').each(function() {
+                $(this).hide();
+            });
+
+            if (tipo == 'error') {
+                $('#alertErrorMsg').html(msg);
+                $('#alert-error').fadeIn();
+            } 
+            else if (tipo == 'success') {
+                $('#alertExitoMsg').html(msg);
+                $('#alert-exito').fadeIn();
+            }
+        }
+
+        function CerrarAlert(tipo) {
+            if (tipo == 'error') $('#alert-error').fadeOut();
+            else if (tipo == 'success') $('#alert-exito').fadeOut();
+        }
+
+        // #endregion
+
+        $(document).ready(Init);
+    </script>
+</body> 

@@ -1,0 +1,335 @@
+@import "./style.less";
+
+#global-content {
+    display: flex;
+    flex-direction: row;
+}
+
+/* #region MenuNav */
+
+#nav-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 15rem;
+    height: 100%;
+    background-color: @blue;
+    color: white;
+    padding: 1rem;
+
+    #top {
+        #boxTitle {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+    
+        #img_anime-bot {
+            height: 3rem;
+            width: 3rem;
+            margin-right: 1rem;
+        }
+        
+        #title {
+            display: flex;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+    
+        ul {
+            display: flex;
+            flex-direction: column;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+    
+            li {
+                display: inline-block;
+                width: fit-content;
+                margin-bottom: .5rem;
+                cursor: pointer;
+            }
+        }
+    
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: .5rem;
+        }
+    }
+
+    #bottom {
+        display: flex;
+        flex-direction: column;
+
+        #diaHoy {
+            width: fit-content;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .img_discord {
+            width: 2rem;
+            height: 2rem;
+            background-color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #btnCerrarSesion {
+            width: fit-content;
+            border-radius: 6px;
+            font-size: 1rem;
+            border-color: white;
+            color: white;
+            .BgTrans();
+
+            &:hover, &:active {
+                background-color: white !important;
+                color: @blue;
+                border-color: @blue;
+            }
+        }
+
+        #usuario {
+            display: inline-block;
+            width: fit-content;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+
+    .nav-separador {
+        width: 60%;
+        height: 2px;
+        margin: 2rem auto;
+        background-color: white;
+    }
+}
+
+#nav-left #bottom #usuario:after {
+    display:block;
+    content: '';
+    border-bottom: solid 1px white;  
+    transform: scaleX(0);  
+    transition: transform 250ms ease-in-out;
+    transform-origin:  0% 50%;
+}
+
+#nav-left #bottom #usuario:hover:after {
+    transform: scaleX(1);
+}
+
+#nav-left ul li:after {
+    display:block;
+    content: '';
+    border-bottom: solid 1px white;  
+    transform: scaleX(0);  
+    transition: transform 250ms ease-in-out;
+    transform-origin:  0% 50%;
+}
+
+#nav-left ul li:hover:after {
+    transform: scaleX(1);
+}
+
+/* #endregion */
+
+/* #region WaitingForm */
+
+.cargando {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding-top: 5rem;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+#waiting-form {
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    width: fit-content;
+    background-color: white;
+    border: 2px solid @blue;
+    border-radius: 6px;
+
+    #img_waiting {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    #waiting-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+}
+
+/* #endregion */
+
+.alert button.btn-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 1.25rem 1rem;
+}
+
+#anime, #manga {
+    margin: 1rem 2rem;
+
+    button {
+        height: fit-content;
+        border-radius: 6px;
+        color: white;
+    }
+}
+
+#content {
+    width: calc(100% - 15rem);
+    margin-left: 15rem;
+
+    .boxHeader {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h1 {
+            margin-right: 3rem;
+        }
+    }
+
+    input {
+        border-color: #dee2e6 !important;
+        box-shadow: none !important;
+    }
+}
+
+.spanError {
+    background-color: #a12f31;
+    color: white;
+}
+
+.empty-img {
+    width: 30rem;
+}
+
+/* #region Card info */
+
+.card {
+    display: flex;
+    flex-direction: row;
+    width: 30rem;
+    border-color: transparent;
+    border-radius: 6px;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.card-img {
+    width: 10rem;
+    border-radius: 0;
+    border-start-start-radius: 6px;
+    border-end-start-radius: 6px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    width: min-content;
+    height: 100%;
+    font-size: 1rem;
+    margin: 0rem .5rem;
+    padding: 0;
+}
+
+.c_title {
+    height: fit-content;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: .5rem 0rem;
+}
+
+.c_fecha {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+}
+
+.c_day {
+    margin-right: .5rem;
+}
+
+.c_hour {
+    font-weight: bold;
+}
+
+.c_airing {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.c_box_eps span {
+    font-weight: bold;
+}
+
+.c_box_rrss {
+    position: absolute;
+    bottom: 5px;
+    left: 10.5rem; /* Lo que ocupa la imagen del anime */
+}
+
+img.c_rrss {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.c_eliminar {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
+.c_editar {
+    position: absolute;
+    bottom: 5px;
+    right: 40px;
+}
+
+.c_img_actions {
+    height: 2rem;
+    width: 2rem;
+    cursor: pointer;
+}
+
+.c_border_right {
+    height: 100%;
+    width: 5px;
+    border-radius: 0;
+    border-start-end-radius: 6px;
+    border-end-end-radius: 6px;
+}
+
+/* #endregion */
+
+#anime_watching_list, #anime_novedades_list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+

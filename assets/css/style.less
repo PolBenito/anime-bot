@@ -1,0 +1,74 @@
+/* #region Variables */
+
+@blue: #2e51a2;
+@red: #b02a37;
+@green: #198754;
+@yellow: #f1c83e;
+@gray: #c3c3c3;
+
+/* #endregion */
+
+
+/* #region Funciones */
+
+.BgTrans {
+    background-color: transparent !important;
+}
+
+/* #endregion */
+
+
+/* #region Colores globales */
+
+.bg_blue {
+    background-color: @blue;
+
+    &[type=button]:hover, &[type=button]:active {
+        color: @blue !important;
+        border-color: @blue !important;
+        .BgTrans();
+    }
+
+    &[type=button]:focus-visible {
+        background-color: @blue;
+    }
+}
+
+.bg_red {
+    background-color: @red;
+
+    &[type=button]:hover, &[type=button]:active {
+        color: @red !important;
+        border-color: @red !important;
+        .BgTrans();
+    }
+
+    &[type=button]:focus-visible {
+        background-color: @red;
+    }
+}
+
+.bg_green {
+    background-color: @green;
+
+    &[type=button]:hover, &[type=button]:active {
+        color: @green !important;
+        border-color: @green !important;
+        .BgTrans();
+    }
+
+    &[type=button]:focus-visible {
+        background-color: @green;
+    }
+}
+
+.bg_yellow { background-color: @yellow; }
+.bg_gray { background-color: @gray; }
+
+/* #endregion */
+
+
+html, body, div#global-content {
+    font-size: 1rem;
+    background-color: #f6f6f6;
+}
