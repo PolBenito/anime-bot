@@ -275,6 +275,10 @@
 
 
         async function Init() {
+            if (window.location.pathname === '/') {
+                window.location.replace('/index.html');
+            }
+            
             // Limpia el cache
             $.ajaxSetup({
                 cache: false
